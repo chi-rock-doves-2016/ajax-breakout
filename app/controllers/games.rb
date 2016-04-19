@@ -5,7 +5,12 @@ end
 
 get '/games/new' do
   @game = Game.new
-  erb :"games/new"
+
+  if request.xhr?
+    erb :"games/_new", locals: {game: @game}, layout: false
+  else
+    erb :"games/new"
+  end
 end
 
 post '/games' do
@@ -14,7 +19,12 @@ post '/games' do
   if @game.save
     redirect '/games'
   else
-    erb :"games/new"
+    if request.xhr?
+      status 422
+      body "Something went wrong"
+    else
+      erb :"games/new"
+    end
   end
 end
 
